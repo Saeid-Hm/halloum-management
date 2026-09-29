@@ -41,7 +41,7 @@ label{display:block;font-size:13px;font-weight:700;color:var(--mut);margin-botto
 input[type=text],input[type=email],input[type=password],input[type=number],select,textarea{width:100%;padding:11px 14px;border:1.5px solid #e2ddd2;border-radius:10px;font-size:14px;outline:none;background:#fff;transition:.25s}
 input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 4px var(--tint)}
 textarea{min-height:90px;resize:vertical;line-height:1.8}
-.btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--acl),var(--pri));color:#fff;border:0;border-radius:999px;padding:11px 26px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--acl),var(--pri));color:#fff;border:0;border-radius:999px;padding:11px 26px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;text-decoration:none}
 .btn:hover{filter:brightness(1.07)}.btn:active{transform:scale(.96)}
 .btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
 .btn.danger{background:#dc2626;border:0}
@@ -64,18 +64,38 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 .litem .info{flex:1;min-width:0}
 .litem b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .litem span{font-size:12px;color:var(--mut)}
-.badge{font-size:11px;padding:3px 10px;border-radius:999px;font-weight:700}
+.lactions{display:flex;gap:6px;flex:none}
+.badge{font-size:11px;padding:3px 10px;border-radius:999px;font-weight:700;flex:none}
 .badge.pub{background:#dcfce7;color:#15803d}.badge.un{background:#fee2e2;color:#b91c1c}
 .specrow{display:flex;gap:8px;margin-bottom:8px}
-.specrow input{flex:1}
+.specrow input{flex:1;min-width:0}
 .specrow button{flex:none;width:38px;border-radius:10px;border:0;background:#fee2e2;color:#b91c1c;cursor:pointer;font-size:16px}
 .adbox{border:1.5px solid #e2ddd2;border-radius:12px;padding:14px;margin-bottom:12px;background:var(--tint)}
 .adbox h4{font-size:14px;margin-bottom:8px;color:var(--pri)}
+/* ===== شريط الهاتف العلوي + التبويبات ===== */
+.mobtop,.tabsbar{display:none}
 @media(max-width:800px){
   .shell{flex-direction:column}
-  .side{width:100%;height:auto;flex-direction:row;overflow-x:auto;position:sticky;top:0;z-index:40;padding:10px}
-  .side .logo{border:0;padding:0 10px 0 0;margin:0}.side .logo div,.side .sp{display:none}
-  .sbtn{width:auto;white-space:nowrap}
+  .side{display:none}
+  .mobtop{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--prd),var(--pri));color:#fff;padding:10px 12px;position:sticky;top:0;z-index:60}
+  .mlogo{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:800}
+  .macts{display:flex;gap:8px}
+  .micon{width:38px;height:38px;border-radius:10px;border:0;background:#ffffff22;color:#fff;font-size:16px;display:grid;place-items:center;cursor:pointer;text-decoration:none}
+  .tabsbar{display:flex;position:sticky;top:58px;z-index:59;background:var(--bg);padding:8px;gap:6px;overflow-x:auto;scrollbar-width:none;box-shadow:0 4px 12px rgba(0,0,0,.06)}
+  .tabsbar::-webkit-scrollbar{display:none}
+  .tbtn{flex:none;border:1.5px solid #e2ddd2;background:#fff;color:var(--mut);padding:8px 14px;border-radius:999px;font-weight:800;font-size:12px;cursor:pointer;display:flex;gap:6px;align-items:center;transition:.2s}
+  .tbtn.on{background:var(--pri);border-color:var(--pri);color:#fff}
+  .main{padding:12px}
+  .topbar{margin-bottom:12px}
+  .topbar h2{font-size:17px}
+  .panel{padding:14px}
+  .btn{padding:10px 18px;font-size:13px}
+  .btn.sm{padding:7px 10px;font-size:11px}
+  .litem{flex-wrap:wrap}
+  .litem .info{flex:1 1 55%}
+  .lactions{width:100%;margin-top:8px}
+  .lactions .btn{flex:1}
+  .thumb{width:84px;height:68px}
 }
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:300;background:#111827ee;color:#fff;padding:11px 24px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.3s;max-width:88%;text-align:center}
 #toast.show{opacity:1;bottom:34px}
@@ -97,6 +117,29 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 </div>
 
 <div class="shell hidden" id="shell">
+  <!-- شريط الهاتف العلوي -->
+  <header class="mobtop">
+    <div class="mlogo">
+      <svg width="30" height="30" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#ffffff22"/><path d="M21 16v32M43 16v32M21 32h22" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="16" r="4" fill="#fff"/></svg>
+      <b>H-yber Management</b>
+    </div>
+    <div class="macts">
+      <a class="micon" id="openSiteM" href="https://saeid-hm.github.io/halloum-sofa/" target="_blank" rel="noopener" title="عرض موقع الناس">🌐</a>
+      <button class="micon" id="logoutM" title="خروج">🚪</button>
+    </div>
+  </header>
+  <!-- تبويبات الهاتف -->
+  <nav class="tabsbar" id="tabsbar">
+    <button class="tbtn on" data-sec="products">📦 المنتجات</button>
+    <button class="tbtn" data-sec="form">➕ جديد/تعديل</button>
+    <button class="tbtn" data-sec="features">⚙️ الميزات</button>
+    <button class="tbtn" data-sec="general">🏬 العامة</button>
+    <button class="tbtn" data-sec="layout">🧭 العرض</button>
+    <button class="tbtn" data-sec="style">🎨 الألوان</button>
+    <button class="tbtn" data-sec="contact">📞 التواصل</button>
+    <button class="tbtn" data-sec="content">🖼️ الواجهة</button>
+  </nav>
+
   <aside class="side">
     <div class="logo">
       <svg width="38" height="38" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#ffffff22"/><path d="M21 16v32M43 16v32M21 32h22" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="16" r="4" fill="#fff"/></svg>
@@ -261,7 +304,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-/* 🔑 تطبيق مسمّى: جلسة إدارة منفصلة تماماً عن جلسة موقع الناس على نفس النطاق */
+/* 🔑 جلسة إدارة منفصلة تماماً عن جلسة موقع الناس على نفس النطاق */
 const app  = initializeApp(firebaseConfig, 'hyber-admin');
 const auth = getAuth(app);
 const db   = getFirestore(app);
@@ -281,8 +324,8 @@ $('#lBtn').onclick=async()=>{
   }catch(e){ toast(ERR[e.code]||('خطأ: '+e.code)); }
 };
 $('#logout').onclick=()=>signOut(auth);
+$('#logoutM').onclick=()=>signOut(auth);
 onAuthStateChanged(auth,u=>{
-  /* 🛡️ حارس: أي جلسة مجهولة تُطرد فوراً (لمنع توارث جلسة موقع الناس) */
   if(u && u.isAnonymous){ signOut(auth); return; }
   $('#login').classList.toggle('hidden',!!u);
   $('#shell').classList.toggle('hidden',!u);
@@ -292,9 +335,11 @@ onAuthStateChanged(auth,u=>{
 function go(sec){
   ['products','form','features','general','layout','style','contact','content'].forEach(s=>$('#sec-'+s).classList.toggle('hidden',s!==sec));
   $$('.sbtn[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
+  $$('.tbtn[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
   window.scrollTo({top:0,behavior:'smooth'});
 }
 $$('.sbtn[data-sec]').forEach(b=>b.onclick=()=>go(b.dataset.sec));
+$$('.tbtn[data-sec]').forEach(b=>b.onclick=()=>go(b.dataset.sec));
 $$('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto));
 
 function fileToDataUrl(file,max,q){
@@ -443,9 +488,11 @@ function subscribeProducts(){
         <img src="${p.thumb||''}" alt="">
         <div class="info"><b>${p.titleAr||p.titleEn||'—'}</b><span>${p.catAr||''} ${p.price?('· '+p.price):''}</span></div>
         <span class="badge ${p.published?'pub':'un'}">${p.published?'منشور':'مخفي'}</span>
-        <button class="btn sm ghost" data-edit="${p.id}">تعديل</button>
-        <button class="btn sm ghost" data-pub="${p.id}" data-v="${p.published?0:1}">${p.published?'إخفاء':'نشر'}</button>
-        <button class="btn sm danger" data-del="${p.id}">حذف</button>
+        <div class="lactions">
+          <button class="btn sm ghost" data-edit="${p.id}">تعديل</button>
+          <button class="btn sm ghost" data-pub="${p.id}" data-v="${p.published?0:1}">${p.published?'إخفاء':'نشر'}</button>
+          <button class="btn sm danger" data-del="${p.id}">حذف</button>
+        </div>
       </div>`).join('') : '<p style="color:var(--mut);text-align:center;padding:20px">لا توجد منتجات بعد — ابدأ بإضافة أول منتج ➕</p>';
     $('#prodList').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openForm(window.__prods.find(x=>x.id===b.dataset.edit)));
     $('#prodList').querySelectorAll('[data-pub]').forEach(b=>b.onclick=async()=>{ try{ await updateDoc(doc(db,'products',b.dataset.pub),{published:b.dataset.v==='1'}); }catch(e){ fail(e); } });
