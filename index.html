@@ -276,9 +276,10 @@ $('#lBtn').onclick=async()=>{
 };
 $('#logout').onclick=()=>signOut(auth);
 onAuthStateChanged(auth,u=>{
-  $('#login').classList.toggle('hidden',!!u);
-  $('#shell').classList.toggle('hidden',!u);
-  if(u){ loadSettings(); subscribeProducts(); subscribeHero(); subscribeAds(); }
+  const ok = !!u && !u.isAnonymous;
+  $('#login').classList.toggle('hidden',ok);
+  $('#shell').classList.toggle('hidden',!ok);
+  if(ok){ loadSettings(); subscribeProducts(); subscribeHero(); subscribeAds(); }
 });
 
 function go(sec){
