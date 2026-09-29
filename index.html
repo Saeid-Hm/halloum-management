@@ -111,7 +111,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
     <button class="sbtn" data-sec="contact">📞 التواصل والخريطة</button>
     <button class="sbtn" data-sec="content">🖼️ الواجهة والمحتوى</button>
     <div class="sp"></div>
-    <a class="sbtn" id="openSite" href="#" target="_blank">🌐 عرض موقع الناس</a>
+    <a class="sbtn" id="openSite" href="https://saeid-hm.github.io/halloum-sofa/" target="_blank">🌐 عرض موقع الناس</a>
     <button class="sbtn" id="logout">🚪 خروج</button>
   </aside>
 
@@ -248,9 +248,6 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 <div id="toast"></div>
 
 <script type="module">
-/* ============================================================
-   ⚙️ إعدادات Firebase — مشروع halloum-sofa
-============================================================ */
 const firebaseConfig = {
   apiKey: "AIzaSyD5azqrR9Pq2Ak-03zLQCnsie3QmytHoC0",
   authDomain: "halloum-sofa.firebaseapp.com",
@@ -259,7 +256,6 @@ const firebaseConfig = {
   messagingSenderId: "432784656900",
   appId: "1:432784656900:web:7cab72f4ed807aacb44351"
 };
-const PUBLIC_SITE_URL = "https://USERNAME.github.io/halloom-public/";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -271,8 +267,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let toastT; function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600); }
 
 const THEMES={brown:'#8a5a2b',blue:'#1d4ed8',green:'#15803d',red:'#b91c1c',orange:'#c2570b',purple:'#7e22ce'};
-const A={ settings:{layout:{mode:'grid',cols:2},contact:{},features:{likes:true,newAlerts:true,vibration:true,ads:true}}, editingId:null, formImages:[], heroImages:[], adsLoaded:false };
-$('#openSite').href=PUBLIC_SITE_URL;
+const A={ settings:{layout:{mode:'grid',cols:2},contact:{},features:{likes:true,newAlerts:true,vibration:true,ads:true}}, editingId:null, formImages:[], heroImages:[] };
 
 const ERR={ 'auth/invalid-credential':'بيانات الدخول غير صحيحة','auth/user-not-found':'لا يوجد حساب','auth/wrong-password':'كلمة المرور خاطئة','auth/too-many-requests':'محاولات كثيرة، انتظر قليلاً','permission-denied':'مرفوض: تأكد من وجود مستند admins لمعرّف المستخدم لديك (role: owner)' };
 $('#lBtn').onclick=async()=>{
@@ -353,7 +348,6 @@ $('#saveContent').onclick=async()=>{
   toast('✅ تم تحديث صور الواجهة');
 };
 
-/* ---------- الإعلانات ---------- */
 function buildAdsUI(){
   $('#adsBox').innerHTML=[1,2,3,4,5].map(i=>`
     <div class="adbox">
@@ -371,7 +365,7 @@ function subscribeAds(){
     const map={}; snap.docs.forEach(d=>map[d.id]=d.data());
     [1,2,3,4,5].forEach(i=>{
       const a=map['ad'+i]||{};
-      if(document.activeElement && document.activeElement.id==='adAr_'+i) return;
+      if(document.activeElement && document.activeElement.id && document.activeElement.id.startsWith('adAr_')) return;
       $('#adAr_'+i).value=a.textAr||''; $('#adEn_'+i).value=a.textEn||'';
       $('#adLink_'+i).value=a.link||''; $('#adActive_'+i).checked=!!a.active;
     });
@@ -390,7 +384,6 @@ $('#saveAds').onclick=saveAds;
 $('#adsAllOn').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=true); saveAds(); };
 $('#adsAllOff').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=false); saveAds(); };
 
-/* ---------- الصور ---------- */
 async function syncMedia(pid,arr){
   const old=await getDocs(query(collection(db,'media'),where('productId','==',pid)));
   for(const d of old.docs) await deleteDoc(d.ref);
@@ -422,13 +415,11 @@ function subscribeHero(){
   });
 }
 
-/* ---------- المواصفات ---------- */
 function specRow(k='',v=''){ const d=document.createElement('div'); d.className='specrow'; d.innerHTML=`<input placeholder="المفتاح (مثال: القماش)" value="${k.replace(/"/g,'&quot;')}"><input placeholder="القيمة (مثال: دمشقي فاخر)" value="${v.replace(/"/g,'&quot;')}"><button type="button">✕</button>`; d.querySelector('button').onclick=()=>d.remove(); return d; }
 $('#addSpecAr').onclick=()=>$('#specsAr').appendChild(specRow());
 $('#addSpecEn').onclick=()=>$('#specsEn').appendChild(specRow());
 const collectSpecs=sel=>[...$(sel).querySelectorAll('.specrow')].map(r=>{ const i=r.querySelectorAll('input'); return {k:i[0].value.trim(),v:i[1].value.trim()}; }).filter(s=>s.k||s.v);
 
-/* ---------- المنتجات ---------- */
 function subscribeProducts(){
   onSnapshot(collection(db,'products'),snap=>{
     const list=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
