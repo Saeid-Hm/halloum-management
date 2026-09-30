@@ -158,12 +158,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 
   <main class="main">
     <section id="sec-products">
-      <div class="topbar"><h2>المنتجات المنشورة</h2><button class="btn" data-goto="form">➕ منتج جديد</button></div>
+      <div class="topbar"><h2>المنتجات المنشورة</h2><button class="btn" id="newProdBtn">➕ منتج جديد</button></div>
       <div class="panel" id="prodList"></div>
     </section>
 
     <section id="sec-form" class="hidden">
-      <div class="topbar"><h2 id="formTitle">منتج جديد</h2><button class="btn ghost" data-goto="products">→ القائمة</button></div>
+      <div class="topbar"><h2 id="formTitle">منتج جديد</h2><button class="btn ghost" id="backToList">→ القائمة</button></div>
       <div class="panel">
         <div class="fgrid">
           <div><label>الاسم (عربي) *</label><input type="text" id="pTitleAr"></div>
@@ -312,10 +312,15 @@ const db   = getFirestore(app);
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let toastT; function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),4000); }
-function fail(e){ console.error(e); toast('⛠ خطأ Firestore: '+(e.code||e.message)); }
+function fail(e){ console.error(e); toast('⛠ خطأ: '+(e.code||e.message)); }
 
 const THEMES={brown:'#8a5a2b',blue:'#1d4ed8',green:'#15803d',red:'#b91c1c',orange:'#c2570b',purple:'#7e22ce'};
+
+/* ============================================================
+   🔥 الإصلاح الجوهري: المصفوفتان ثابتتان للأبد — تعديل داخلي فقط
+============================================================ */
 const A={ settings:{layout:{mode:'grid',cols:2},contact:{},features:{likes:true,newAlerts:true,vibration:true,ads:true}}, editingId:null, formImages:[], heroImages:[] };
+function setImages(target,items){ target.length=0; for(const x of (items||[])) target.push(x); }
 
 /* 🗜️ محرك الضغط المضمون */
 const MEDIA_TARGET = 90000;
@@ -368,9 +373,10 @@ function go(sec){
   $$('.tbtn[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
   window.scrollTo({top:0,behavior:'smooth'});
 }
-$$('.sbtn[data-sec]').forEach(b=>b.onclick=()=>go(b.dataset.sec));
-$$('.tbtn[data-sec]').forEach(b=>b.onclick=()=>go(b.dataset.sec));
-$$('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto));
+$$('.sbtn[data-sec]').forEach(b=>b.onclick=()=>{ if(b.dataset.sec==='form'){ resetForm(); } go(b.dataset.sec); });
+$$('.tbtn[data-sec]').forEach(b=>b.onclick=()=>{ if(b.dataset.sec==='form'){ resetForm(); } go(b.dataset.sec); });
+$('#newProdBtn').onclick=()=>{ resetForm(); go('form'); };
+$('#backToList').onclick=()=>{ resetForm(); go('products'); };
 
 async function loadSettings(){
   try{
@@ -457,9 +463,7 @@ $('#saveAds').onclick=saveAds;
 $('#adsAllOn').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=true); saveAds(); };
 $('#adsAllOff').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=false); saveAds(); };
 
-/* ============================================================
-   🛡️ مزامنة media غير مدمّرة + تحقق بعد الكتابة
-============================================================ */
+/* 🛡️ media: قراءة/كتابة/تحقق */
 async function readMedia(pid){
   const snap=await getDocs(query(collection(db,'media'),where('productId','==',pid)));
   return snap.docs.map(d=>({mid:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
@@ -487,15 +491,15 @@ async function writeMedia(pid,arr){
 }
 async function syncMedia(pid,arr){
   if(!arr.length){ const ex=await readMedia(pid); for(const d of ex){ try{ await deleteDoc(doc(db,'media',d.mid)); }catch(e){} } return 0; }
-  let written=await writeMedia(pid,arr);
+  await writeMedia(pid,arr);
   let stored=await readMedia(pid);
   if(stored.length!==arr.length){
     toast('🔁 إعادة مزامنة تلقائية...');
-    written=await writeMedia(pid,arr);
+    await writeMedia(pid,arr);
     stored=await readMedia(pid);
   }
   const good=stored.filter(d=>validThumb(d.dataUrl)).length;
-  if(pid!=='hero' && good!==undefined){ try{ await updateDoc(doc(db,'products',pid),{imageCount:good}); }catch(e){} }
+  if(pid!=='hero'){ try{ await updateDoc(doc(db,'products',pid),{imageCount:good}); }catch(e){} }
   if(good===arr.length) toast(`✅ تحقق: ${good}/${arr.length} صور محفوظة في السيرفر`);
   else toast(`⚠️ تحقق: ${good}/${arr.length} — اضغط 🔄 إعادة مزامنة أو أرسل كود الخطأ`);
   return good;
@@ -514,7 +518,7 @@ function bindDrop(dropSel,fileSel,arr,sel,limit){
       try{
         const du=await compressFile(f);
         arr.push(du); renderThumbs(sel,arr);
-        toast(`✅ ضُغطت إلى ${(du.length/1024).toFixed(0)}KB — جاهزة للحفظ`);
+        toast(`✅ ضُغطت إلى ${(du.length/1024).toFixed(0)}KB — أضفتها للنموذج`);
       }catch(e){ toast('⚠️ تعذر قراءة هذه الصورة — حوّلها إلى JPG وأعد المحاولة'); }
     }
     fin.value='';
@@ -524,7 +528,7 @@ bindDrop('#pDrop','#pFiles',A.formImages,'#pThumbs',6);
 bindDrop('#hDrop','#hFiles',A.heroImages,'#hThumbs',3);
 function subscribeHero(){
   onSnapshot(query(collection(db,'media'),where('productId','==','hero')),snap=>{
-    A.heroImages=snap.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0)).map(x=>x.dataUrl);
+    setImages(A.heroImages, snap.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0)).map(x=>x.dataUrl));
     renderThumbs('#hThumbs',A.heroImages);
   }, err=>fail(err));
 }
@@ -539,7 +543,7 @@ $('#verifyImgs').onclick=async()=>{
   try{
     const stored=await readMedia(A.editingId);
     const good=stored.filter(d=>validThumb(d.dataUrl));
-    A.formImages=good.map(d=>d.dataUrl);
+    setImages(A.formImages, good.map(d=>d.dataUrl));
     renderThumbs('#pThumbs',A.formImages);
     toast(good.length? `✔️ موجود في السيرفر: ${good.length} صورة (المعاينات محدّثة)` : '⚠️ لا توجد صور محفوظة لهذا المنتج');
   }catch(e){ fail(e); }
@@ -599,27 +603,40 @@ function subscribeProducts(){
     repairThumbs(list);
   }, err=>fail(err));
 }
+
+/* ✅ إعادة تعيين آمنة (بديل openForm(null) المنهار) */
+function resetForm(){
+  A.editingId=null;
+  setImages(A.formImages,[]);
+  $('#formTitle').textContent='منتج جديد';
+  ['pTitleAr','pTitleEn','pCatAr','pCatEn','pPrice','pDescAr','pDescEn'].forEach(id=>{ const el=$('#'+id); if(el) el.value=''; });
+  $('#pPub').checked=true; $('#pFeat').checked=false;
+  $('#specsAr').innerHTML=''; $('#specsEn').innerHTML='';
+  renderThumbs('#pThumbs',A.formImages);
+}
 async function openForm(p){
-  A.editingId=p?p.id:null;
+  if(!p){ resetForm(); go('form'); return; }
+  A.editingId=p.id;
   try{
     const stored=await readMedia(p.id);
-    A.formImages=stored.filter(d=>validThumb(d.dataUrl)).map(d=>d.dataUrl);
-    if(!A.formImages.length && Array.isArray(p.images)) A.formImages=[...p.images];
+    let imgs=stored.filter(d=>validThumb(d.dataUrl)).map(d=>d.dataUrl);
+    if(!imgs.length && Array.isArray(p.images)) imgs=[...p.images];
+    setImages(A.formImages,imgs);
     toast(`📷 الصور المخزنة في السيرفر: ${A.formImages.length}`);
     if(!A.formImages.length && (p.imageCount||0)>0) toast('⚠️ المنتج يشير لصور غير موجودة — أعد رفعها ثم حفظ');
-  }catch(e){ fail(e); A.formImages=[]; }
-  $('#formTitle').textContent=p?'تعديل منتج':'منتج جديد';
-  $('#pTitleAr').value=p?p.titleAr||'':''; $('#pTitleEn').value=p?p.titleEn||'':'';
-  $('#pCatAr').value=p?p.catAr||'':''; $('#pCatEn').value=p?p.catEn||'':'';
-  $('#pPrice').value=p?p.price||'':''; $('#pPub').checked=p?p.published!==false:true; $('#pFeat').checked=!!(p&&p.featured);
-  $('#pDescAr').value=p?p.descAr||'':''; $('#pDescEn').value=p?p.descEn||'':'';
+  }catch(e){ fail(e); setImages(A.formImages,[]); }
+  $('#formTitle').textContent='تعديل منتج';
+  $('#pTitleAr').value=p.titleAr||''; $('#pTitleEn').value=p.titleEn||'';
+  $('#pCatAr').value=p.catAr||''; $('#pCatEn').value=p.catEn||'';
+  $('#pPrice').value=p.price||''; $('#pPub').checked=p.published!==false; $('#pFeat').checked=!!p.featured;
+  $('#pDescAr').value=p.descAr||''; $('#pDescEn').value=p.descEn||'';
   $('#specsAr').innerHTML=''; $('#specsEn').innerHTML='';
-  ((p&&p.specsAr)||[]).forEach(s=>$('#specsAr').appendChild(specRow(s.k,s.v)));
-  ((p&&p.specsEn)||[]).forEach(s=>$('#specsEn').appendChild(specRow(s.k,s.v)));
+  ((p.specsAr)||[]).forEach(s=>$('#specsAr').appendChild(specRow(s.k,s.v)));
+  ((p.specsEn)||[]).forEach(s=>$('#specsEn').appendChild(specRow(s.k,s.v)));
   renderThumbs('#pThumbs',A.formImages);
   go('form');
 }
-$('#cancelProd').onclick=()=>openForm(null);
+$('#cancelProd').onclick=()=>{ resetForm(); go('products'); };
 $('#saveProd').onclick=async()=>{
   const titleAr=$('#pTitleAr').value.trim();
   if(!titleAr){ toast('⚠️ الاسم العربي مطلوب'); return; }
@@ -636,9 +653,8 @@ $('#saveProd').onclick=async()=>{
     if(id) await updateDoc(doc(db,'products',id),data);
     else { const r=await addDoc(collection(db,'products'),{...data,createdAt:serverTimestamp()}); id=r.id; }
     const good=await syncMedia(id,A.formImages);
-    A.editingId=id;
     toast(`✅ تم الحفظ والنشر — صور مُتحقق منها: ${good}/${A.formImages.length}`);
-    openForm(null); go('products');
+    resetForm(); go('products');
   }catch(e){ fail(e); }
 };
 </script>
