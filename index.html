@@ -57,7 +57,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .thumb{position:relative;width:96px;height:78px;border-radius:10px;overflow:hidden;box-shadow:var(--sh)}
 .thumb img{width:100%;height:100%;object-fit:cover}
-.thumb button{position:absolute;top:4px;inset-inline-end:4px;width:22px;height:22px;border-radius:50%;;border:0;background:#000000aa;color:#fff;cursor:pointer;font-size:12px;line-height:1}
+.thumb button{position:absolute;top:4px;inset-inline-end:4px;width:22px;height:22px;border-radius:50%;border:0;background:#000000aa;color:#fff;cursor:pointer;font-size:12px;line-height:1}
 .litem{display:flex;gap:12px;align-items:center;padding:10px;border:1.5px solid #eee;border-radius:12px;margin-bottom:10px;transition:.25s}
 .litem:hover{border-color:var(--pri);box-shadow:var(--sh)}
 .litem img{width:70px;height:56px;object-fit:cover;border-radius:8px;flex:none;background:var(--tint)}
@@ -180,9 +180,13 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
           <div class="full"><label>المواصفات (عربي) — مفتاح / قيمة</label><div id="specsAr"></div><button class="btn sm ghost" id="addSpecAr">+ إضافة سطر</button></div>
           <div class="full"><label>المواصفات (إنكليزي)</label><div id="specsEn"></div><button class="btn sm ghost" id="addSpecEn">+ إضافة سطر</button></div>
           <div class="full">
-            <label>صور المنتج (حتى 6 — ضغط تلقائي مضمون حتى مستوى النشر)</label>
+            <label>صور المنتج (حتى 6 — ضغط مضمون + تحقق بعد الحفظ)</label>
             <div class="drop" id="pDrop">اضغط لاختيار الصور أو أفلتها هنا 📷<input type="file" id="pFiles" accept="image/*" multiple hidden></div>
             <div class="thumbs" id="pThumbs"></div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn sm ghost" id="resyncImgs">🔄 إعادة مزامنة الصور</button>
+              <button class="btn sm ghost" id="verifyImgs">✔️ تحقق من الحفظ</button>
+            </div>
           </div>
         </div>
         <div class="row" style="margin-top:16px">
@@ -307,19 +311,17 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-let toastT; function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),3500); }
+let toastT; function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),4000); }
 function fail(e){ console.error(e); toast('⛠ خطأ Firestore: '+(e.code||e.message)); }
 
 const THEMES={brown:'#8a5a2b',blue:'#1d4ed8',green:'#15803d',red:'#b91c1c',orange:'#c2570b',purple:'#7e22ce'};
 const A={ settings:{layout:{mode:'grid',cols:2},contact:{},features:{likes:true,newAlerts:true,vibration:true,ads:true}}, editingId:null, formImages:[], heroImages:[] };
 
-/* ============================================================
-   🗜️ محرك الضغط المضمون: سلّم تنازلي حتى هدف الحجم الآمن
-============================================================ */
-const MEDIA_TARGET = 700000;   /* حرف Base64 كحد نشر آمن للصور الكاملة */
-const THUMB_TARGET = 60000;    /* حرف Base64 للمصغّرات */
-const MEDIA_LADDER = [[1100,0.70],[1000,0.62],[900,0.55],[800,0.48],[700,0.42],[600,0.36],[500,0.32],[420,0.28],[360,0.25]];
-const THUMB_LADDER = [[360,0.60],[320,0.52],[280,0.45],[240,0.38],[200,0.32]];
+/* 🗜️ محرك الضغط المضمون */
+const MEDIA_TARGET = 90000;
+const THUMB_TARGET = 40000;
+const MEDIA_LADDER = [[1000,0.60],[900,0.55],[800,0.50],[700,0.45],[600,0.40],[500,0.35],[420,0.30],[360,0.26],[320,0.22]];
+const THUMB_LADDER = [[360,0.60],[320,0.52],[280,0.45],[240,0.38],[200,0.32],[160,0.28],[140,0.25]];
 const validThumb = s => typeof s==='string' && s.startsWith('data:image/') && s.length>800;
 
 function loadImg(src){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('decode-fail')); i.src=src; }); }
@@ -337,9 +339,9 @@ async function fitTarget(src,ladder,target){
   return out;
 }
 function probe(du){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(true); im.onerror=()=>rej(new Error('decode-fail')); im.src=du; }); }
-async function compressFile(file,target,ladder){
+async function compressFile(file){
   const dataUrl = await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); });
-  const du = await fitTarget(dataUrl,ladder,target);
+  const du = await fitTarget(dataUrl,MEDIA_LADDER,MEDIA_TARGET);
   await probe(du);
   return du;
 }
@@ -413,7 +415,8 @@ $('#saveFeatures').onclick=()=>save({features:{likes:$('#fLikes').checked,newAle
 $('#saveContact').onclick=()=>save({contact:{phone:$('#cPhone').value,whatsapp:$('#cWa').value,email:$('#cEmail').value,facebook:$('#cFb').value,instagram:$('#cIg').value,youtube:$('#cYt').value,addressAr:$('#cAddrAr').value,addressEn:$('#cAddrEn').value,mapEmbed:$('#cMap').value}});
 $('#saveContent').onclick=async()=>{
   await save({heroTitleAr:$('#hTitleAr').value,heroTitleEn:$('#hTitleEn').value,aboutAr:$('#aAr').value,aboutEn:$('#aEn').value});
-  try{ await syncMedia('hero',A.heroImages); toast('✅ تم تحديث صور الواجهة'); }catch(e){ fail(e); }
+  const n=await syncMedia('hero',A.heroImages);
+  toast(n===A.heroImages.length ? `✅ صور الواجهة محفوظة ومُتحقق منها: ${n}` : `⚠️ صور الواجهة: ${n}/${A.heroImages.length}`);
 };
 
 function buildAdsUI(){
@@ -454,14 +457,48 @@ $('#saveAds').onclick=saveAds;
 $('#adsAllOn').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=true); saveAds(); };
 $('#adsAllOff').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=false); saveAds(); };
 
-async function syncMedia(pid,arr){
-  const old=await getDocs(query(collection(db,'media'),where('productId','==',pid)));
-  for(const d of old.docs) await deleteDoc(d.ref);
+/* ============================================================
+   🛡️ مزامنة media غير مدمّرة + تحقق بعد الكتابة
+============================================================ */
+async function readMedia(pid){
+  const snap=await getDocs(query(collection(db,'media'),where('productId','==',pid)));
+  return snap.docs.map(d=>({mid:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+}
+async function writeMedia(pid,arr){
+  const existing=await readMedia(pid);
+  let ok=0;
   for(let i=0;i<arr.length;i++){
     let du=arr[i];
-    if(du.length>940000) du=await fitTarget(du,MEDIA_LADDER,MEDIA_TARGET); /* حارس أخير قبل الكتابة */
-    await addDoc(collection(db,'media'),{productId:pid,order:i,dataUrl:du,createdAt:serverTimestamp()});
+    if(du.length>MEDIA_TARGET){ try{ du=await fitTarget(du,MEDIA_LADDER,MEDIA_TARGET); }catch(e){} }
+    let done=false;
+    for(let tries=0; tries<3 && !done; tries++){
+      try{
+        if(existing[i]) await updateDoc(doc(db,'media',existing[i].mid),{order:i,dataUrl:du});
+        else await addDoc(collection(db,'media'),{productId:pid,order:i,dataUrl:du});
+        done=true; ok++;
+      }catch(e){
+        if(tries<2){ try{ du=await fitTarget(du,MEDIA_LADDER.slice(tries+3),MEDIA_TARGET); }catch(e2){} }
+        else fail(e);
+      }
+    }
   }
+  for(let i=arr.length;i<existing.length;i++){ try{ await deleteDoc(doc(db,'media',existing[i].mid)); }catch(e){} }
+  return ok;
+}
+async function syncMedia(pid,arr){
+  if(!arr.length){ const ex=await readMedia(pid); for(const d of ex){ try{ await deleteDoc(doc(db,'media',d.mid)); }catch(e){} } return 0; }
+  let written=await writeMedia(pid,arr);
+  let stored=await readMedia(pid);
+  if(stored.length!==arr.length){
+    toast('🔁 إعادة مزامنة تلقائية...');
+    written=await writeMedia(pid,arr);
+    stored=await readMedia(pid);
+  }
+  const good=stored.filter(d=>validThumb(d.dataUrl)).length;
+  if(pid!=='hero' && good!==undefined){ try{ await updateDoc(doc(db,'products',pid),{imageCount:good}); }catch(e){} }
+  if(good===arr.length) toast(`✅ تحقق: ${good}/${arr.length} صور محفوظة في السيرفر`);
+  else toast(`⚠️ تحقق: ${good}/${arr.length} — اضغط 🔄 إعادة مزامنة أو أرسل كود الخطأ`);
+  return good;
 }
 function renderThumbs(sel,arr){
   $(sel).innerHTML=arr.map((u,i)=>`<div class="thumb"><img src="${u}"><button data-i="${i}">✕</button></div>`).join('');
@@ -475,9 +512,9 @@ function bindDrop(dropSel,fileSel,arr,sel,limit){
       if(arr.length>=limit){ toast(`الحد الأقصى ${limit} صور`); break; }
       toast('🗜️ ضغط الصورة إلى مستوى النشر...');
       try{
-        const du=await compressFile(f,MEDIA_TARGET,MEDIA_LADDER);
+        const du=await compressFile(f);
         arr.push(du); renderThumbs(sel,arr);
-        toast(`✅ ضُغطت إلى ${(du.length/1024).toFixed(0)}KB`);
+        toast(`✅ ضُغطت إلى ${(du.length/1024).toFixed(0)}KB — جاهزة للحفظ`);
       }catch(e){ toast('⚠️ تعذر قراءة هذه الصورة — حوّلها إلى JPG وأعد المحاولة'); }
     }
     fin.value='';
@@ -491,23 +528,36 @@ function subscribeHero(){
     renderThumbs('#hThumbs',A.heroImages);
   }, err=>fail(err));
 }
+$('#resyncImgs').onclick=async()=>{
+  if(!A.editingId){ toast('⚠️ احفظ المنتج أولاً'); return; }
+  if(!A.formImages.length){ toast('⚠️ لا توجد صور في النموذج — أضف صوراً'); return; }
+  toast('🔄 إعادة مزامنة الصور...');
+  await syncMedia(A.editingId,A.formImages);
+};
+$('#verifyImgs').onclick=async()=>{
+  if(!A.editingId){ toast('⚠️ احفظ المنتج أولاً'); return; }
+  try{
+    const stored=await readMedia(A.editingId);
+    const good=stored.filter(d=>validThumb(d.dataUrl));
+    A.formImages=good.map(d=>d.dataUrl);
+    renderThumbs('#pThumbs',A.formImages);
+    toast(good.length? `✔️ موجود في السيرفر: ${good.length} صورة (المعاينات محدّثة)` : '⚠️ لا توجد صور محفوظة لهذا المنتج');
+  }catch(e){ fail(e); }
+};
 
 function specRow(k='',v=''){ const d=document.createElement('div'); d.className='specrow'; d.innerHTML=`<input placeholder="المفتاح (مثال: القماش)" value="${k.replace(/"/g,'&quot;')}"><input placeholder="القيمة (مثال: دمشقي فاخر)" value="${v.replace(/"/g,'&quot;')}"><button type="button">✕</button>`; d.querySelector('button').onclick=()=>d.remove(); return d; }
 $('#addSpecAr').onclick=()=>$('#specsAr').appendChild(specRow());
 $('#addSpecEn').onclick=()=>$('#specsEn').appendChild(specRow());
 const collectSpecs=sel=>[...$(sel).querySelectorAll('.specrow')].map(r=>{ const i=r.querySelectorAll('input'); return {k:i[0].value.trim(),v:i[1].value.trim()}; }).filter(s=>s.k||s.v);
 
-/* ---------- الإصلاح الذاتي للمصغّرات ---------- */
 const repairing=new Set();
 async function repairThumbs(list){
   for(const p of list){
     if(validThumb(p.thumb)||repairing.has(p.id)) continue;
     repairing.add(p.id);
     try{
-      let src=null;
-      const med=await getDocs(query(collection(db,'media'),where('productId','==',p.id)));
-      const arr=med.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0)).map(x=>x.dataUrl);
-      src=arr[0] || (Array.isArray(p.images)&&p.images[0]) || null;
+      const stored=await readMedia(p.id);
+      const src=stored[0]?.dataUrl || (Array.isArray(p.images)&&p.images[0]) || null;
       if(src){
         const th=await fitTarget(src,THUMB_LADDER,THUMB_TARGET);
         await probe(th);
@@ -526,7 +576,7 @@ function subscribeProducts(){
     $('#prodList').innerHTML = list.length ? list.map(p=>`
       <div class="litem">
         ${validThumb(p.thumb)?`<img src="${p.thumb}" alt="">`:`<div class="noimg">🖼️</div>`}
-        <div class="info"><b>${p.titleAr||p.titleEn||'—'}</b><span>${p.catAr||''} ${p.price?('· '+p.price):''}</span></div>
+        <div class="info"><b>${p.titleAr||p.titleEn||'—'}</b><span>${p.catAr||''} ${p.price?('· '+p.price):''} · صور: ${p.imageCount||0}</span></div>
         <span class="badge ${p.published?'pub':'un'}">${p.published?'منشور':'مخفي'}</span>
         <div class="lactions">
           <button class="btn sm ghost" data-edit="${p.id}">تعديل</button>
@@ -540,8 +590,8 @@ function subscribeProducts(){
       if(!confirm('حذف المنتج وصوره نهائياً؟')) return;
       try{
         await deleteDoc(doc(db,'products',b.dataset.del));
-        const med=await getDocs(query(collection(db,'media'),where('productId','==',b.dataset.del)));
-        for(const d of med.docs) await deleteDoc(d.ref);
+        const med=await readMedia(b.dataset.del);
+        for(const d of med) await deleteDoc(doc(db,'media',d.mid));
         await deleteDoc(doc(db,'likes',b.dataset.del)).catch(()=>{});
         toast('🗑️ تم الحذف');
       }catch(e){ fail(e); }
@@ -552,8 +602,11 @@ function subscribeProducts(){
 async function openForm(p){
   A.editingId=p?p.id:null;
   try{
-    A.formImages = p ? (await getDocs(query(collection(db,'media'),where('productId','==',p.id)))).docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0)).map(x=>x.dataUrl) : [];
-    if(!A.formImages.length && p && Array.isArray(p.images)) A.formImages=[...p.images];
+    const stored=await readMedia(p.id);
+    A.formImages=stored.filter(d=>validThumb(d.dataUrl)).map(d=>d.dataUrl);
+    if(!A.formImages.length && Array.isArray(p.images)) A.formImages=[...p.images];
+    toast(`📷 الصور المخزنة في السيرفر: ${A.formImages.length}`);
+    if(!A.formImages.length && (p.imageCount||0)>0) toast('⚠️ المنتج يشير لصور غير موجودة — أعد رفعها ثم حفظ');
   }catch(e){ fail(e); A.formImages=[]; }
   $('#formTitle').textContent=p?'تعديل منتج':'منتج جديد';
   $('#pTitleAr').value=p?p.titleAr||'':''; $('#pTitleEn').value=p?p.titleEn||'':'';
@@ -582,8 +635,9 @@ $('#saveProd').onclick=async()=>{
     let id=A.editingId;
     if(id) await updateDoc(doc(db,'products',id),data);
     else { const r=await addDoc(collection(db,'products'),{...data,createdAt:serverTimestamp()}); id=r.id; }
-    await syncMedia(id,A.formImages);
-    toast('✅ تم الحفظ والنشر');
+    const good=await syncMedia(id,A.formImages);
+    A.editingId=id;
+    toast(`✅ تم الحفظ والنشر — صور مُتحقق منها: ${good}/${A.formImages.length}`);
     openForm(null); go('products');
   }catch(e){ fail(e); }
 };
