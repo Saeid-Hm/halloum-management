@@ -29,10 +29,11 @@ button,input,select,textarea{font-family:var(--font)}
 .sbtn{display:flex;gap:10px;align-items:center;background:none;border:0;color:#ffffffcc;padding:11px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;text-align:right;transition:.25s;width:100%}
 .sbtn:hover{background:#ffffff18;color:#fff}
 .sbtn.on{background:#ffffff26;color:#fff}
+.sbtn svg{flex:none}
 .side .sp{margin-top:auto}
 .main{flex:1;padding:20px;min-width:0}
 .topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-.topbar h2{font-size:20px;margin-inline-end:auto}
+.topbar h2{font-size:20px;margin-inline-end:auto;display:flex;align-items:center;gap:8px}
 .panel{background:#fff;border-radius:var(--rad);box-shadow:var(--sh);padding:20px;margin-bottom:18px}
 .fgrid{display:grid;gap:14px;grid-template-columns:1fr}
 @media(min-width:820px){.fgrid{grid-template-columns:1fr 1fr}}
@@ -127,7 +128,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.8}
 <nav class="tabsbar" id="tabsbar">
 <button class="tbtn on" data-sec="products">📦 المنتجات</button>
 <button class="tbtn" data-sec="form">➕ جديد/تعديل</button>
-<button class="tbtn" data-sec="bot">🤖 البوت</button>
+<button class="tbtn" data-sec="bot"><svg width="20" height="15" viewBox="0 0 64 48"><rect width="64" height="48" rx="12" fill="#ffd21f"/><circle cx="16" cy="16" r="5" fill="#d9a406"/><circle cx="40" cy="12" r="4" fill="#d9a406"/><circle cx="52" cy="26" r="5" fill="#d9a406"/><circle cx="24" cy="32" r="4" fill="#d9a406"/><circle cx="44" cy="38" r="3" fill="#d9a406"/></svg> البوت</button>
 <button class="tbtn" data-sec="features">⚙️ الميزات</button>
 <button class="tbtn" data-sec="general">🏬 العامة</button>
 <button class="tbtn" data-sec="layout">🧭 العرض</button>
@@ -139,7 +140,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.8}
 <div class="logo"><svg width="38" height="38" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#ffffff22"/><path d="M21 16v32M43 16v32M21 32h22" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="16" r="4" fill="#fff"/></svg><div><b>H-yber Management</b><span>لوحة النشر والإدارة</span></div></div>
 <button class="sbtn on" data-sec="products">📦 المنتجات</button>
 <button class="sbtn" data-sec="form">➕ منتج جديد / تعديل</button>
-<button class="sbtn" data-sec="bot">🤖 البوت والأسئلة</button>
+<button class="sbtn" data-sec="bot"><svg width="22" height="16" viewBox="0 0 64 48"><rect width="64" height="48" rx="12" fill="#ffd21f"/><circle cx="16" cy="16" r="5" fill="#d9a406"/><circle cx="40" cy="12" r="4" fill="#d9a406"/><circle cx="52" cy="26" r="5" fill="#d9a406"/><circle cx="24" cy="32" r="4" fill="#d9a406"/><circle cx="44" cy="38" r="3" fill="#d9a406"/></svg> البوت والأسئلة</button>
 <button class="sbtn" data-sec="features">⚙️ الميزات والإعلانات</button>
 <button class="sbtn" data-sec="general">🏬 الإعدادات العامة</button>
 <button class="sbtn" data-sec="layout">🧭 طريقة العرض</button>
@@ -189,7 +190,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.8}
 </div>
 </section>
 <section id="sec-bot" class="hidden">
-<div class="topbar"><h2>🤖 البوت والأسئلة الشائعة</h2></div>
+<div class="topbar"><h2><svg width="26" height="20" viewBox="0 0 64 48"><rect width="64" height="48" rx="12" fill="#ffd21f"/><circle cx="16" cy="16" r="5" fill="#d9a406"/><circle cx="40" cy="12" r="4" fill="#d9a406"/><circle cx="52" cy="26" r="5" fill="#d9a406"/><circle cx="24" cy="32" r="4" fill="#d9a406"/><circle cx="44" cy="38" r="3" fill="#d9a406"/></svg> البوت والأسئلة الشائعة</h2></div>
 <div class="panel">
 <label class="check"><input type="checkbox" id="fBot"> 🧽 إظهار الإسفنجة والبوت في موقع الناس والتطبيق</label>
 <div class="row" style="margin-top:12px"><button class="btn" id="saveBotCfg">💾 حفظ إعداد البوت</button></div>
@@ -260,8 +261,8 @@ textarea{min-height:80px;resize:vertical;line-height:1.8}
 <section id="sec-contact" class="hidden">
 <div class="topbar"><h2>معلومات التواصل والخريطة</h2></div>
 <div class="panel"><div class="fgrid">
-<div><label>رقم الهاتف</label><input type="text" id="cPhone" placeholder="+963..."></div>
-<div><label>رقم واتساب (دولي بدون +)</label><input type="text" id="cWa" placeholder="963..."></div>
+<div><label>رقم الهاتف (يمكن عدة أرقام بفواصل أو أسطر)</label><input type="text" id="cPhone" placeholder="+963... , +963..."></div>
+<div><label>رقم واتساب (دولي بدون + — يمكن عدة أرقام)</label><input type="text" id="cWa" placeholder="963... , 963..."></div>
 <div><label>البريد الإلكتروني</label><input type="text" id="cEmail"></div>
 <div><label>رابط فيسبوك</label><input type="text" id="cFb"></div>
 <div><label>رابط إنستغرام</label><input type="text" id="cIg"></div>
@@ -382,7 +383,7 @@ const SEED=[
 ["هل يوجد تطبيق جوال؟","قريباً، والموقع حالياً يعمل كتطبيق من متصفح جوالك."],
 ["كيف أغير لغة الموقع؟","اضغط زر EN أعلى الموقع للتبديل بين العربية والإنكليزية."],
 ["ما فائدة زر الإعجاب؟","لتعبّر عن إعجابك بالمنتج ويساعدنا نعرف ذوقكم."],
-["كيف أصلني تنبيه المنتجات الجديدة؟","الجرس أعلى الموقع ينبهك تلقائياً عند كل منشور جديد."],
+["كيف يصلني تنبيه المنتجات الجديدة؟","الجرس أعلى الموقع ينبهك تلقائياً عند كل منشور جديد."],
 ["هل أقترح تصميماً جديداً؟","أكيد، اقتراحاتكم مرحب بها عبر واتساب."],
 ["كيف أقدم شكوى؟","اتصل بالإدارة مباشرة وسيتم حلها فوراً."],
 ["هل تتوفر بطاقة هدية؟","نعم، بطاقة هدية بالقيمة التي تختارها."],
@@ -500,7 +501,6 @@ async function saveAds(){
 $('#saveAds').onclick=saveAds;
 $('#adsAllOn').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=true); saveAds(); };
 $('#adsAllOff').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=false); saveAds(); };
-/* ===== البوت ===== */
 function subscribeBot(){
   onSnapshot(collection(db,'bot'),snap=>{
     const list=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
@@ -550,7 +550,6 @@ $('#saveBotQ').onclick=async()=>{
     editingBotId=null; $('#bQ').value=''; $('#bA').value=''; $('#cancelBotEdit').classList.add('hidden');
   }catch(e){ fail(e); }
 };
-/* ===== الصور والمنتجات ===== */
 async function readMedia(pid){
   const snap=await getDocs(query(collection(db,'media'),where('productId','==',pid)));
   return snap.docs.map(d=>({mid:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
@@ -619,6 +618,22 @@ function subscribeHero(){
     renderThumbs('#hThumbs',A.heroImages);
   }, err=>fail(err));
 }
+$('#resyncImgs').onclick=async()=>{
+  if(!A.editingId){ toast('⚠️ احفظ المنتج أولاً'); return; }
+  if(!A.formImages.length){ toast('⚠️ لا توجد صور في النموذج — أضف صوراً'); return; }
+  toast('🔄 إعادة مزامنة الصور...');
+  await syncMedia(A.editingId,A.formImages);
+};
+$('#verifyImgs').onclick=async()=>{
+  if(!A.editingId){ toast('⚠️ احفظ المنتج أولاً'); return; }
+  try{
+    const stored=await readMedia(A.editingId);
+    const good=stored.filter(d=>validThumb(d.dataUrl));
+    setImages(A.formImages, good.map(d=>d.dataUrl));
+    renderThumbs('#pThumbs',A.formImages);
+    toast(good.length? `✔️ موجود في السيرفر: ${good.length} صورة (المعاينات محدّثة)` : '⚠️ لا توجد صور محفوظة لهذا المنتج');
+  }catch(e){ fail(e); }
+};
 function specRow(k='',v=''){ const d=document.createElement('div'); d.className='specrow'; d.innerHTML=`<input placeholder="المفتاح (مثال: القماش)" value="${k.replace(/"/g,'&quot;')}"><input placeholder="القيمة (مثال: دمشقي فاخر)" value="${v.replace(/"/g,'&quot;')}"><button type="button">✕</button>`; d.querySelector('button').onclick=()=>d.remove(); return d; }
 $('#addSpecAr').onclick=()=>$('#specsAr').appendChild(specRow());
 $('#addSpecEn').onclick=()=>$('#specsEn').appendChild(specRow());
