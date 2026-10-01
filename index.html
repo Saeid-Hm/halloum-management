@@ -40,7 +40,7 @@ button,input,select,textarea{font-family:var(--font)}
 label{display:block;font-size:13px;font-weight:700;color:var(--mut);margin-bottom:6px}
 input[type=text],input[type=email],input[type=password],input[type=number],select,textarea{width:100%;padding:11px 14px;border:1.5px solid #e2ddd2;border-radius:10px;font-size:14px;outline:none;background:#fff;transition:.25s}
 input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 4px var(--tint)}
-textarea{min-height:90px;resize:vertical;line-height:1.8}
+textarea{min-height:80px;resize:vertical;line-height:1.8}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--acl),var(--pri));color:#fff;border:0;border-radius:999px;padding:11px 26px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;text-decoration:none}
 .btn:hover{filter:brightness(1.07)}.btn:active{transform:scale(.96)}
 .btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
@@ -58,12 +58,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 .thumb{position:relative;width:96px;height:78px;border-radius:10px;overflow:hidden;box-shadow:var(--sh)}
 .thumb img{width:100%;height:100%;object-fit:cover}
 .thumb button{position:absolute;top:4px;inset-inline-end:4px;width:22px;height:22px;border-radius:50%;border:0;background:#000000aa;color:#fff;cursor:pointer;font-size:12px;line-height:1}
-.litem{display:flex;gap:12px;align-items:center;padding:10px;border:1.5px solid #eee;border-radius:12px;margin-bottom:10px;transition:.25s}
+.litem{display:flex;gap:12px;align-items:center;padding:10px;border:1.5px solid #eee;border-radius:12px;margin-bottom:10px;transition:.25s;flex-wrap:wrap}
 .litem:hover{border-color:var(--pri);box-shadow:var(--sh)}
 .litem img{width:70px;height:56px;object-fit:cover;border-radius:8px;flex:none;background:var(--tint)}
 .noimg{width:70px;height:56px;border-radius:8px;background:var(--tint);display:grid;place-items:center;font-size:22px;flex:none}
 .litem .info{flex:1;min-width:0}
-.litem b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.litem b{font-size:14px;display:block}
 .litem span{font-size:12px;color:var(--mut)}
 .lactions{display:flex;gap:6px;flex:none}
 .badge{font-size:11px;padding:3px 10px;border-radius:999px;font-weight:700;flex:none}
@@ -73,6 +73,9 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 .specrow button{flex:none;width:38px;border-radius:10px;border:0;background:#fee2e2;color:#b91c1c;cursor:pointer;font-size:16px}
 .adbox{border:1.5px solid #e2ddd2;border-radius:12px;padding:14px;margin-bottom:12px;background:var(--tint)}
 .adbox h4{font-size:14px;margin-bottom:8px;color:var(--pri)}
+.bitem{border:1.5px solid #eee;border-radius:12px;padding:12px;margin-bottom:10px;background:#fff}
+.bitem .bq{font-weight:800;font-size:14px;color:var(--prd);margin-bottom:4px}
+.bitem .ba{font-size:12.5px;color:var(--mut);line-height:1.8;margin-bottom:8px}
 .mobtop,.tabsbar{display:none}
 @media(max-width:800px){
 .shell{flex-direction:column}
@@ -91,7 +94,6 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 .panel{padding:14px}
 .btn{padding:10px 18px;font-size:13px}
 .btn.sm{padding:7px 10px;font-size:11px}
-.litem{flex-wrap:wrap}
 .litem .info{flex:1 1 55%}
 .lactions{width:100%;margin-top:8px}
 .lactions .btn{flex:1}
@@ -125,6 +127,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 <nav class="tabsbar" id="tabsbar">
 <button class="tbtn on" data-sec="products">📦 المنتجات</button>
 <button class="tbtn" data-sec="form">➕ جديد/تعديل</button>
+<button class="tbtn" data-sec="bot">🤖 البوت</button>
 <button class="tbtn" data-sec="features">⚙️ الميزات</button>
 <button class="tbtn" data-sec="general">🏬 العامة</button>
 <button class="tbtn" data-sec="layout">🧭 العرض</button>
@@ -136,6 +139,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 <div class="logo"><svg width="38" height="38" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#ffffff22"/><path d="M21 16v32M43 16v32M21 32h22" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="16" r="4" fill="#fff"/></svg><div><b>H-yber Management</b><span>لوحة النشر والإدارة</span></div></div>
 <button class="sbtn on" data-sec="products">📦 المنتجات</button>
 <button class="sbtn" data-sec="form">➕ منتج جديد / تعديل</button>
+<button class="sbtn" data-sec="bot">🤖 البوت والأسئلة</button>
 <button class="sbtn" data-sec="features">⚙️ الميزات والإعلانات</button>
 <button class="sbtn" data-sec="general">🏬 الإعدادات العامة</button>
 <button class="sbtn" data-sec="layout">🧭 طريقة العرض</button>
@@ -183,6 +187,25 @@ textarea{min-height:90px;resize:vertical;line-height:1.8}
 <button class="btn ghost" id="cancelProd">إلغاء</button>
 </div>
 </div>
+</section>
+<section id="sec-bot" class="hidden">
+<div class="topbar"><h2>🤖 البوت والأسئلة الشائعة</h2></div>
+<div class="panel">
+<label class="check"><input type="checkbox" id="fBot"> 🧽 إظهار الإسفنجة والبوت في موقع الناس والتطبيق</label>
+<div class="row" style="margin-top:12px"><button class="btn" id="saveBotCfg">💾 حفظ إعداد البوت</button></div>
+</div>
+<div class="panel">
+<div class="row" style="margin-bottom:12px">
+<button class="btn sm" id="seedBot">🌱 تحميل 50 سؤالاً جاهزاً بإجاباتها</button>
+</div>
+<label>السؤال</label><textarea id="bQ" style="min-height:50px" placeholder="مثال: ما هي ساعات العمل؟"></textarea>
+<label style="margin-top:10px">الإجابة</label><textarea id="bA" style="min-height:70px" placeholder="اكتب الإجابة التي ستكتبها الإسفنجة حرفاً حرفاً..."></textarea>
+<div class="row" style="margin-top:12px">
+<button class="btn" id="saveBotQ">💾 حفظ السؤال</button>
+<button class="btn ghost hidden" id="cancelBotEdit">إلغاء التعديل</button>
+</div>
+</div>
+<div class="panel"><div class="topbar" style="margin-bottom:10px"><h2 style="font-size:17px">قائمة الأسئلة (<span id="botCount">0</span>)</h2></div><div id="botList"></div></div>
 </section>
 <section id="sec-features" class="hidden">
 <div class="topbar"><h2>الميزات والإعلانات</h2></div>
@@ -286,7 +309,8 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let toastT; function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),4000); }
 function fail(e){ console.error(e); toast('⛠ خطأ: '+(e.code||e.message)); }
 const THEMES={brown:'#8a5a2b',blue:'#1d4ed8',green:'#15803d',red:'#b91c1c',orange:'#c2570b',purple:'#7e22ce'};
-const A={ settings:{layout:{mode:'grid',cols:2},contact:{},features:{likes:true,newAlerts:true,vibration:true,ads:true}}, editingId:null, formImages:[], heroImages:[] };
+const A={ settings:{layout:{mode:'grid',cols:2},contact:{},features:{likes:true,newAlerts:true,vibration:true,ads:true,bot:true}}, editingId:null, formImages:[], heroImages:[] };
+let editingBotId=null;
 function setImages(target,items){ target.length=0; for(const x of (items||[])) target.push(x); }
 const MEDIA_TARGET = 900000;
 const THUMB_TARGET = 60000;
@@ -314,6 +338,58 @@ async function compressFile(file){
   await probe(du);
   return du;
 }
+const SEED=[
+["ما هي ساعات العمل؟","نستقبلكم يومياً من 9 صباحاً حتى 9 مساءً، والجمعة من 2 ظهراً حتى 9 مساءً."],
+["كيف أطلب منتجاً؟","اختر المنتج واضغط طلب عبر واتساب، أو زرنا في المعرض مباشرة."],
+["هل يتوفر التوصيل؟","نعم، نوصل إلى جميع المحافظات ويتم التنسيق عبر واتساب."],
+["كم تكلفة التوصيل؟","تحدد حسب المسافة، ومجاناً داخل المدينة للطلبات الكبيرة."],
+["هل يوجد تقسيط؟","نعم، تقسيط مريح عبر شركات التمويل المعتمدة."],
+["ما أنواع الأقمشة المتوفرة؟","دمشقي، بروكار، مخمل، كتان، وأقمشة تركية مستوردة."],
+["هل يمكن اختيار لون مخصص؟","نعم، كتالوج ألوان واسع متوفر لكل قماش."],
+["ما المقاسات المتوفرة؟","مقاسات قياسية ومقاسات مفصلة حسب مساحتك."],
+["هل تفصلون مجالس حسب الطلب؟","نعم، ننفذ تصميمك أو تصميم مهندسك بدقة."],
+["كم يستغرق التفصيل؟","من 10 إلى 20 يوماً حسب تفاصيل الطلب."],
+["هل يوجد ضمان؟","نعم، ضمان على الهيكل والإسفنج حتى 3 سنوات."],
+["ماذا يشمل الضمان؟","عيوب الصناعة، كسر الهيكل، وهبوط الإسفنج الواضح."],
+["كيف أحافظ على المجلس؟","تنظيف دوري بالمكنسة وتجنب الشمس المباشرة يحفظ الألوان."],
+["هل توفرون خدمة تنظيف؟","نعم، تنظيف مجالس منزلي بأسعار خاصة لعملائنا."],
+["هل يمكن تنجيد الأثاث القديم؟","نعم، إعادة تنجيد كاملة مع تغيير القماش والإسفنج."],
+["هل تستبدلون الإسفنج؟","نعم، إسفنج عالي الكثافة بالسماكة التي تختارها."],
+["ما أنواع المجالس العربية؟","مجالس أرضية، ظهرية، كشات، وطقوم دمشقية."],
+["ما هي الزاوية؟","طقم بشكل L أو U مناسب للصالات العصرية."],
+["هل تتوفر مخدات؟","نعم، مخدات ووسائد متناسقة بكل المقاسات."],
+["هل يوجد سجاد ومفروشات؟","تشكيلة مختارة من السجاد والموكيت متوفرة."],
+["هل تفصلون ستائر؟","نعم، ستائر مفصلة مع خدمة تركيب."],
+["هل تتوفر أسرّة وغرف نوم؟","حسب الطلب، بتفصيل كامل واختيار قماش ورأس سرير."],
+["هل أرى عينات القماش؟","نعم في المعرض أو نرسل صورها عبر واتساب."],
+["هل تقيسون المساحة مجاناً؟","نعم، معاينة وقياس مجاني داخل المدينة قبل الطلب."],
+["هل التركيب مجاني؟","نعم، تركيب وترتيب داخل المنزل بدون تكلفة إضافية."],
+["ما طرق الدفع؟","نقداً، تحويل بنكي، أو تقسيط معتمد."],
+["هل يوجد عربون للطلب؟","نعم، 30% عربون لتأكيد الطلب المفصل."],
+["هل يمكن إرجاع المنتج؟","المنتجات الجاهزة تستبدل خلال 3 أيام بحالتها الأصلية."],
+["ما سياسة الاستبدال؟","استبدال فقط حسب شروط الفاتورة."],
+["هل توجد تخفيضات حالياً؟","تابع شريط الإعلانات أعلى الموقع لأحدث العروض."],
+["هل تبيعون جملة؟","نعم، أسعار خاصة للمحلات والمشاريع الكبيرة."],
+["هل تشحنون خارج المحافظة؟","نعم، عبر شركات شحن موثوقة مع تغليف كامل."],
+["كيف أتابع طلبي؟","راسلنا على واتساب برقم الطلب لمعرفة حالته فوراً."],
+["هل أستلم فاتورة؟","نعم، فاتورة مفصلة ومختومة مع كل طلب."],
+["أين يقع المعرض؟","العنوان في قسم تواصل معنا مع خريطة جوجل."],
+["كيف أتواصل مع خدمة العملاء؟","عبر زر الاتصال أو واتساب الموجود في كل منتج."],
+["ما سرعة الرد على واتساب؟","خلال دقائق يومياً من 9 صباحاً حتى 10 مساءً."],
+["هل أحجز موعد معاينة؟","نعم، احجز موعد معاينة مجانية في المعرض."],
+["هل تساعدون في اختيار التصميم؟","نعم، نساعدك باختيار الألوان والمقاسات المناسبة لمساحتك."],
+["كيف أحمل كتالوج المنتج؟","اضغط زر تحميل PDF عالي الدقة داخل كل منتج."],
+["هل يوجد تطبيق جوال؟","قريباً، والموقع حالياً يعمل كتطبيق من متصفح جوالك."],
+["كيف أغير لغة الموقع؟","اضغط زر EN أعلى الموقع للتبديل بين العربية والإنكليزية."],
+["ما فائدة زر الإعجاب؟","لتعبّر عن إعجابك بالمنتج ويساعدنا نعرف ذوقكم."],
+["كيف أصلني تنبيه المنتجات الجديدة؟","الجرس أعلى الموقع ينبهك تلقائياً عند كل منشور جديد."],
+["هل أقترح تصميماً جديداً؟","أكيد، اقتراحاتكم مرحب بها عبر واتساب."],
+["كيف أقدم شكوى؟","اتصل بالإدارة مباشرة وسيتم حلها فوراً."],
+["هل تتوفر بطاقة هدية؟","نعم، بطاقة هدية بالقيمة التي تختارها."],
+["هل التغليف آمن للشحن؟","تغليف متعدد الطبقات يحمي القماش والزوايا."],
+["هل تساعدون في إدخال الأثاث للمنزل؟","نعم، الفريق ينقل ويرتب الأثاث بالطابق المطلوب."],
+["كيف أعرف السعر المحدث؟","السعر ظاهر بكل منتج، أو اسأل عبر واتساب بسعر فوري."]
+];
 const ERR={ 'auth/invalid-credential':'بيانات الدخول غير صحيحة','auth/user-not-found':'لا يوجد حساب','auth/wrong-password':'كلمة المرور خاطئة','auth/too-many-requests':'محاولات كثيرة، انتظر قليلاً' };
 $('#lBtn').onclick=async()=>{
   try{
@@ -327,10 +403,10 @@ onAuthStateChanged(auth,u=>{
   if(u && u.isAnonymous){ signOut(auth); return; }
   $('#login').classList.toggle('hidden',!!u);
   $('#shell').classList.toggle('hidden',!u);
-  if(u){ loadSettings(); subscribeProducts(); subscribeHero(); subscribeAds(); }
+  if(u){ loadSettings(); subscribeProducts(); subscribeHero(); subscribeAds(); subscribeBot(); }
 });
 function go(sec){
-  ['products','form','features','general','layout','style','contact','content'].forEach(s=>$('#sec-'+s).classList.toggle('hidden',s!==sec));
+  ['products','form','bot','features','general','layout','style','contact','content'].forEach(s=>$('#sec-'+s).classList.toggle('hidden',s!==sec));
   $$('.sbtn[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
   $$('.tbtn[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
   window.scrollTo({top:0,behavior:'smooth'});
@@ -354,6 +430,7 @@ function fillForms(){
   $('#sFont').value=st.font||'Cairo';
   $('#fLikes').checked=f.likes!==false; $('#fAlerts').checked=f.newAlerts!==false;
   $('#fVib').checked=f.vibration!==false; $('#fAds').checked=f.ads!==false;
+  $('#fBot').checked=f.bot!==false;
   $('#cPhone').value=c.phone||''; $('#cWa').value=c.whatsapp||''; $('#cEmail').value=c.email||'';
   $('#cFb').value=c.facebook||''; $('#cIg').value=c.instagram||''; $('#cYt').value=c.youtube||'';
   $('#cAddrAr').value=c.addressAr||''; $('#cAddrEn').value=c.addressEn||''; $('#cMap').value=c.mapEmbed||'';
@@ -378,7 +455,8 @@ async function save(patch){
 $('#saveGeneral').onclick=()=>save({storeNameAr:$('#sNameAr').value,storeNameEn:$('#sNameEn').value,taglineAr:$('#sTagAr').value,taglineEn:$('#sTagEn').value});
 $('#saveLayout').onclick=()=>save({layout:{mode:$('#lMode').value,cols:Number($('#lCols').value)}});
 $('#saveStyle').onclick=()=>save({theme:A.settings.theme||'brown',font:$('#sFont').value});
-$('#saveFeatures').onclick=()=>save({features:{likes:$('#fLikes').checked,newAlerts:$('#fAlerts').checked,vibration:$('#fVib').checked,ads:$('#fAds').checked}});
+$('#saveFeatures').onclick=()=>save({features:{...A.settings.features,likes:$('#fLikes').checked,newAlerts:$('#fAlerts').checked,vibration:$('#fVib').checked,ads:$('#fAds').checked}});
+$('#saveBotCfg').onclick=()=>save({features:{...A.settings.features,bot:$('#fBot').checked}});
 $('#saveContact').onclick=()=>save({contact:{phone:$('#cPhone').value,whatsapp:$('#cWa').value,email:$('#cEmail').value,facebook:$('#cFb').value,instagram:$('#cIg').value,youtube:$('#cYt').value,addressAr:$('#cAddrAr').value,addressEn:$('#cAddrEn').value,mapEmbed:$('#cMap').value}});
 $('#saveContent').onclick=async()=>{
   await save({heroTitleAr:$('#hTitleAr').value,heroTitleEn:$('#hTitleEn').value,aboutAr:$('#aAr').value,aboutEn:$('#aEn').value});
@@ -422,6 +500,57 @@ async function saveAds(){
 $('#saveAds').onclick=saveAds;
 $('#adsAllOn').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=true); saveAds(); };
 $('#adsAllOff').onclick=()=>{ [1,2,3,4,5].forEach(i=>$('#adActive_'+i).checked=false); saveAds(); };
+/* ===== البوت ===== */
+function subscribeBot(){
+  onSnapshot(collection(db,'bot'),snap=>{
+    const list=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    window.__bot=list;
+    $('#botCount').textContent=list.length;
+    $('#botList').innerHTML = list.length ? list.map(b=>`
+      <div class="bitem">
+        <div class="bq">❓ ${b.q||''}</div>
+        <div class="ba">💬 ${(b.a||'').slice(0,110)}${(b.a||'').length>110?'...':''}</div>
+        <div class="row">
+          <span class="badge ${b.active?'pub':'un'}">${b.active?'مفعّل':'موقوف'}</span>
+          <button class="btn sm ghost" data-bedit="${b.id}">تعديل</button>
+          <button class="btn sm ghost" data-btog="${b.id}" data-v="${b.active?0:1}">${b.active?'إيقاف':'تفعيل'}</button>
+          <button class="btn sm danger" data-bdel="${b.id}">حذف</button>
+        </div>
+      </div>`).join('') : '<p style="color:var(--mut);text-align:center;padding:16px">لا توجد أسئلة بعد — اضغط 🌱 لتحميل 50 سؤالاً جاهزاً</p>';
+    $('#botList').querySelectorAll('[data-bedit]').forEach(x=>x.onclick=()=>{
+      const b=window.__bot.find(y=>y.id===x.dataset.bedit);
+      editingBotId=b.id; $('#bQ').value=b.q||''; $('#bA').value=b.a||'';
+      $('#cancelBotEdit').classList.remove('hidden'); toast('✏️ تعديل السؤال — عدّل ثم احفظ');
+    });
+    $('#botList').querySelectorAll('[data-btog]').forEach(x=>x.onclick=async()=>{ try{ await updateDoc(doc(db,'bot',x.dataset.btog),{active:x.dataset.v==='1'}); }catch(e){ fail(e); } });
+    $('#botList').querySelectorAll('[data-bdel]').forEach(x=>x.onclick=async()=>{
+      if(!confirm('حذف هذا السؤال نهائياً؟')) return;
+      try{ await deleteDoc(doc(db,'bot',x.dataset.bdel)); toast('🗑️ تم حذف السؤال'); }catch(e){ fail(e); }
+    });
+  }, err=>fail(err));
+}
+$('#seedBot').onclick=async()=>{
+  if(!confirm('تحميل 50 سؤالاً جاهزاً بإجاباتها؟ (لن يمحو أسئلتك الحالية)')) return;
+  toast('⏳ جارٍ تحميل الأسئلة...');
+  try{
+    const base=(window.__bot||[]).length;
+    for(let i=0;i<SEED.length;i++){
+      await setDoc(doc(db,'bot','seed'+(i+1)),{q:SEED[i][0],a:SEED[i][1],active:true,order:base+i+1},{merge:true});
+    }
+    toast('✅ تم تحميل 50 سؤالاً ونشرها');
+  }catch(e){ fail(e); }
+};
+$('#cancelBotEdit').onclick=()=>{ editingBotId=null; $('#bQ').value=''; $('#bA').value=''; $('#cancelBotEdit').classList.add('hidden'); };
+$('#saveBotQ').onclick=async()=>{
+  const q=$('#bQ').value.trim(), a=$('#bA').value.trim();
+  if(!q||!a){ toast('⚠️ السؤال والإجابة مطلوبان'); return; }
+  try{
+    if(editingBotId){ await updateDoc(doc(db,'bot',editingBotId),{q,a}); toast('✅ تم تعديل السؤال'); }
+    else { await addDoc(collection(db,'bot'),{q,a,active:true,order:(window.__bot||[]).length+1}); toast('✅ تم إضافة السؤال ونشره'); }
+    editingBotId=null; $('#bQ').value=''; $('#bA').value=''; $('#cancelBotEdit').classList.add('hidden');
+  }catch(e){ fail(e); }
+};
+/* ===== الصور والمنتجات ===== */
 async function readMedia(pid){
   const snap=await getDocs(query(collection(db,'media'),where('productId','==',pid)));
   return snap.docs.map(d=>({mid:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
@@ -490,22 +619,6 @@ function subscribeHero(){
     renderThumbs('#hThumbs',A.heroImages);
   }, err=>fail(err));
 }
-$('#resyncImgs').onclick=async()=>{
-  if(!A.editingId){ toast('⚠️ احفظ المنتج أولاً'); return; }
-  if(!A.formImages.length){ toast('⚠️ لا توجد صور في النموذج — أضف صوراً'); return; }
-  toast('🔄 إعادة مزامنة الصور...');
-  await syncMedia(A.editingId,A.formImages);
-};
-$('#verifyImgs').onclick=async()=>{
-  if(!A.editingId){ toast('⚠️ احفظ المنتج أولاً'); return; }
-  try{
-    const stored=await readMedia(A.editingId);
-    const good=stored.filter(d=>validThumb(d.dataUrl));
-    setImages(A.formImages, good.map(d=>d.dataUrl));
-    renderThumbs('#pThumbs',A.formImages);
-    toast(good.length? `✔️ موجود في السيرفر: ${good.length} صورة (المعاينات محدّثة)` : '⚠️ لا توجد صور محفوظة لهذا المنتج');
-  }catch(e){ fail(e); }
-};
 function specRow(k='',v=''){ const d=document.createElement('div'); d.className='specrow'; d.innerHTML=`<input placeholder="المفتاح (مثال: القماش)" value="${k.replace(/"/g,'&quot;')}"><input placeholder="القيمة (مثال: دمشقي فاخر)" value="${v.replace(/"/g,'&quot;')}"><button type="button">✕</button>`; d.querySelector('button').onclick=()=>d.remove(); return d; }
 $('#addSpecAr').onclick=()=>$('#specsAr').appendChild(specRow());
 $('#addSpecEn').onclick=()=>$('#specsEn').appendChild(specRow());
