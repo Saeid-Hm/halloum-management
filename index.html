@@ -74,6 +74,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.8}
 .specrow button{flex:none;width:38px;border-radius:10px;border:0;background:#fee2e2;color:#b91c1c;cursor:pointer;font-size:16px}
 .adbox{border:1.5px solid #e2ddd2;border-radius:12px;padding:14px;margin-bottom:12px;background:var(--tint)}
 .adbox h4{font-size:14px;margin-bottom:8px;color:var(--pri)}
+.hcbox{border:1.5px solid #e2ddd2;border-radius:12px;padding:12px;margin-bottom:12px;background:var(--tint)}
 .bitem{border:1.5px solid #eee;border-radius:12px;padding:12px;margin-bottom:10px;background:#fff}
 .bitem .bq{font-weight:800;font-size:14px;color:var(--prd);margin-bottom:4px}
 .bitem .ba{font-size:12.5px;color:var(--mut);line-height:1.8;margin-bottom:8px}
@@ -128,6 +129,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.8}
 <nav class="tabsbar" id="tabsbar">
 <button class="tbtn on" data-sec="products">📦 المنتجات</button>
 <button class="tbtn" data-sec="form">➕ جديد/تعديل</button>
+<button class="tbtn" data-sec="home">🏠 الرئيسية</button>
 <button class="tbtn" data-sec="bot"><svg width="20" height="15" viewBox="0 0 64 48"><rect width="64" height="48" rx="12" fill="#ffd21f"/><circle cx="16" cy="16" r="5" fill="#d9a406"/><circle cx="40" cy="12" r="4" fill="#d9a406"/><circle cx="52" cy="26" r="5" fill="#d9a406"/><circle cx="24" cy="32" r="4" fill="#d9a406"/><circle cx="44" cy="38" r="3" fill="#d9a406"/></svg> البوت</button>
 <button class="tbtn" data-sec="features">⚙️ الميزات</button>
 <button class="tbtn" data-sec="general">🏬 العامة</button>
@@ -140,6 +142,7 @@ textarea{min-height:80px;resize:vertical;line-height:1.8}
 <div class="logo"><svg width="38" height="38" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#ffffff22"/><path d="M21 16v32M43 16v32M21 32h22" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="16" r="4" fill="#fff"/></svg><div><b>H-yber Management</b><span>لوحة النشر والإدارة</span></div></div>
 <button class="sbtn on" data-sec="products">📦 المنتجات</button>
 <button class="sbtn" data-sec="form">➕ منتج جديد / تعديل</button>
+<button class="sbtn" data-sec="home">🏠 بطاقات الرئيسية</button>
 <button class="sbtn" data-sec="bot"><svg width="22" height="16" viewBox="0 0 64 48"><rect width="64" height="48" rx="12" fill="#ffd21f"/><circle cx="16" cy="16" r="5" fill="#d9a406"/><circle cx="40" cy="12" r="4" fill="#d9a406"/><circle cx="52" cy="26" r="5" fill="#d9a406"/><circle cx="24" cy="32" r="4" fill="#d9a406"/><circle cx="44" cy="38" r="3" fill="#d9a406"/></svg> البوت والأسئلة</button>
 <button class="sbtn" data-sec="features">⚙️ الميزات والإعلانات</button>
 <button class="sbtn" data-sec="general">🏬 الإعدادات العامة</button>
@@ -187,6 +190,18 @@ textarea{min-height:80px;resize:vertical;line-height:1.8}
 <button class="btn" id="saveProd">💾 حفظ ونشر</button>
 <button class="btn ghost" id="cancelProd">إلغاء</button>
 </div>
+</div>
+</section>
+<section id="sec-home" class="hidden">
+<div class="topbar"><h2>🏠 بطاقات الصفحة الرئيسية</h2></div>
+<div class="panel">
+<p style="font-size:13px;color:var(--mut);margin-bottom:12px">بطاقات مزخرفة تظهر تحت واجهة موقع الناس: معلومات المحل، المكان، ساعات العمل... أضف، عدّل، احذف، فعّل أو أوقف أي بطاقة.</p>
+<div class="row" style="margin-bottom:12px">
+<button class="btn sm" id="hcAdd">➕ إضافة بطاقة</button>
+<button class="btn sm ghost" id="hcSeed">🌱 تحميل 4 بطاقات جاهزة</button>
+<button class="btn" id="saveHomeCards">💾 حفظ ونشر البطاقات</button>
+</div>
+<div id="hcList"></div>
 </div>
 </section>
 <section id="sec-bot" class="hidden">
@@ -310,9 +325,15 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let toastT; function toast(m){ const el=$('#toast'); el.textContent=m; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),4000); }
 function fail(e){ console.error(e); toast('⛠ خطأ: '+(e.code||e.message)); }
 const THEMES={brown:'#8a5a2b',blue:'#1d4ed8',green:'#15803d',red:'#b91c1c',orange:'#c2570b',purple:'#7e22ce'};
-const A={ settings:{layout:{mode:'grid',cols:2},contact:{},features:{likes:true,newAlerts:true,vibration:true,ads:true,bot:true}}, editingId:null, formImages:[], heroImages:[] };
+const A={ settings:{layout:{mode:'grid',cols:2},contact:{},features:{likes:true,newAlerts:true,vibration:true,ads:true,bot:true},homeCards:[]}, editingId:null, formImages:[], heroImages:[], homeCards:[] };
 let editingBotId=null;
 function setImages(target,items){ target.length=0; for(const x of (items||[])) target.push(x); }
+const HC_SEED=[
+ {icon:'🏬',titleAr:'معلومات عن المحل',titleEn:'About Our Store',textAr:'معرض حلوم للمفروشات — خبرة أكثر من 15 عاماً في تفصيل أرقى المجالس العربية والكنب الدمشقي بأيدي أمهر الحرفيين.',textEn:'Halloom Furniture — over 15 years crafting the finest Arabic majlis and Damascene sofas by master artisans.',active:true},
+ {icon:'📍',titleAr:'مكان المحل',titleEn:'Location',textAr:'سوريا — ريف دمشق، الشارع الرئيسي، بجانب جامع الرحمن. طابق أرضي مع موقف سيارات.',textEn:'Syria — Rif Dimashq, main street, next to Al-Rahman mosque. Ground floor with parking.',active:true},
+ {icon:'🕘',titleAr:'ساعات العمل',titleEn:'Working Hours',textAr:'يومياً من 9 صباحاً حتى 9 مساءً\nالجمعة: 2 ظهراً حتى 9 مساءً',textEn:'Daily 9 AM – 9 PM\nFriday: 2 PM – 9 PM',active:true},
+ {icon:'⭐',titleAr:'لماذا نحن؟',titleEn:'Why Us?',textAr:'أقمشة فاخرة، تفصيل حسب الطلب، ضمان حقيقي، وتوصيل وتركيب مجاني داخل المدينة.',textEn:'Premium fabrics, custom tailoring, real warranty, and free delivery & installation in-city.',active:true}
+];
 const MEDIA_TARGET = 900000;
 const THUMB_TARGET = 60000;
 const MEDIA_LADDER = [[1600,0.78],[1500,0.72],[1400,0.66],[1300,0.60],[1200,0.55],[1100,0.50],[1000,0.45],[900,0.40],[800,0.35]];
@@ -407,7 +428,7 @@ onAuthStateChanged(auth,u=>{
   if(u){ loadSettings(); subscribeProducts(); subscribeHero(); subscribeAds(); subscribeBot(); }
 });
 function go(sec){
-  ['products','form','bot','features','general','layout','style','contact','content'].forEach(s=>$('#sec-'+s).classList.toggle('hidden',s!==sec));
+  ['products','form','home','bot','features','general','layout','style','contact','content'].forEach(s=>$('#sec-'+s).classList.toggle('hidden',s!==sec));
   $$('.sbtn[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
   $$('.tbtn[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===sec));
   window.scrollTo({top:0,behavior:'smooth'});
@@ -421,7 +442,8 @@ async function loadSettings(){
     const s=await getDoc(doc(db,'settings','site'));
     if(s.exists()) A.settings={...A.settings,...s.data(),features:{...A.settings.features,...(s.data().features||{})}};
   }catch(e){ fail(e); }
-  fillForms();
+  A.homeCards = Array.isArray(A.settings.homeCards) ? A.settings.homeCards.map(c=>({...c})) : [];
+  fillForms(); renderHcEditor();
 }
 function fillForms(){
   const st=A.settings, c=st.contact||{}, f=st.features||{};
@@ -464,6 +486,34 @@ $('#saveContent').onclick=async()=>{
   const n=await syncMedia('hero',A.heroImages);
   toast(n===A.heroImages.length ? `✅ صور الواجهة محفوظة ومُتحقق منها: ${n}` : `⚠️ صور الواجهة: ${n}/${A.heroImages.length}`);
 };
+/* ===== بطاقات الرئيسية ===== */
+function renderHcEditor(){
+  const box=$('#hcList');
+  box.innerHTML = A.homeCards.length ? A.homeCards.map((c,i)=>`
+   <div class="hcbox" data-i="${i}">
+     <div class="row" style="margin-bottom:8px">
+       <input type="text" class="hcIcon" style="width:64px;text-align:center;font-size:18px" value="${(c.icon||'').replace(/"/g,'&quot;')}" placeholder="🏬">
+       <label class="check"><input type="checkbox" class="hcActive" ${c.active!==false?'checked':''}> مفعّلة</label>
+       <button class="btn sm danger hcDel">حذف</button>
+     </div>
+     <div class="fgrid">
+       <div><label>العنوان (عربي)</label><input type="text" class="hcTitleAr" value="${(c.titleAr||'').replace(/"/g,'&quot;')}"></div>
+       <div><label>العنوان (إنكليزي)</label><input type="text" class="hcTitleEn" value="${(c.titleEn||'').replace(/"/g,'&quot;')}"></div>
+       <div class="full"><label>النص (عربي)</label><textarea class="hcTextAr" style="min-height:60px">${c.textAr||''}</textarea></div>
+       <div class="full"><label>النص (إنكليزي)</label><textarea class="hcTextEn" style="min-height:60px">${c.textEn||''}</textarea></div>
+     </div>
+   </div>`).join('') : '<p style="color:var(--mut);text-align:center;padding:14px">لا توجد بطاقات — أضف بطاقة أو حمّل البطاقات الجاهزة 🌱</p>';
+  box.querySelectorAll('.hcbox').forEach(bx=>{
+    const i=+bx.dataset.i;
+    const bind=(sel,f)=>{ const el=bx.querySelector(sel); if(el) el.oninput=()=>{ A.homeCards[i][f]=el.value; }; };
+    bind('.hcIcon','icon'); bind('.hcTitleAr','titleAr'); bind('.hcTitleEn','titleEn'); bind('.hcTextAr','textAr'); bind('.hcTextEn','textEn');
+    bx.querySelector('.hcActive').onchange=e=>{ A.homeCards[i].active=e.target.checked; };
+    bx.querySelector('.hcDel').onclick=()=>{ A.homeCards.splice(i,1); renderHcEditor(); };
+  });
+}
+$('#hcAdd').onclick=()=>{ A.homeCards.push({icon:'✨',titleAr:'',titleEn:'',textAr:'',textEn:'',active:true}); renderHcEditor(); };
+$('#hcSeed').onclick=()=>{ if(!confirm('تحميل 4 بطاقات جاهزة؟ (تستبدل قائمة المحرر الحالية حتى الحفظ)')) return; A.homeCards=HC_SEED.map(c=>({...c})); renderHcEditor(); toast('🌱 البطاقات جاهزة — اضغط حفظ ونشر'); };
+$('#saveHomeCards').onclick=()=>save({homeCards:A.homeCards.map(c=>({...c}))});
 function buildAdsUI(){
   $('#adsBox').innerHTML=[1,2,3,4,5].map(i=>`
     <div class="adbox">
